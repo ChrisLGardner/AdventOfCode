@@ -34,7 +34,7 @@ func main() {
 
 	problemIndex := 0
 
-outer:
+part1:
 	for i := 25; i < len(input); i++ {
 
 		for j := i - 25; j < i; j++ {
@@ -45,7 +45,7 @@ outer:
 					continue second
 				}
 				if input[j]+input[k] == input[i] {
-					continue outer
+					continue part1
 				}
 			}
 		}
@@ -55,7 +55,7 @@ outer:
 	fmt.Println(problemIndex)
 	fmt.Println(input[problemIndex])
 
-main:
+part2:
 	for i := 0; i < problemIndex; i++ {
 
 		total := input[i]
@@ -65,7 +65,7 @@ main:
 		for j := i + 1; j < problemIndex; j++ {
 			total += input[j]
 			if total > input[problemIndex] {
-				continue main
+				continue part2
 			}
 			contiguous = append(contiguous, input[j])
 
@@ -87,7 +87,7 @@ main:
 		}
 
 		fmt.Println(lowest + highest)
-		break main
+		break part2
 
 	}
 }
