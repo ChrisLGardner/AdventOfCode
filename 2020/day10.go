@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"math/big"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,55 +35,40 @@ func main() {
 
 	sort.Ints(adapters)
 
-	oneJolt := 1
+	oneJolt := 0
 	threeJolt := 1
-
-	for i := 0; i < (len(adapters) - 1); i++ {
-		if diff := adapters[i+1] - adapters[i]; diff == 1 {
+	previous := 0
+	seen := make(map[int]int)
+	for i, v := range adapters {
+		seen[v] = i
+		if diff := v - previous; diff == 1 {
 			oneJolt++
-			continue
 		} else if diff == 3 {
 			threeJolt++
-			continue
 		}
+		previous = v
 	}
 
 	fmt.Printf("Total one jolts: %d, thee jolts: %d, final total: %d\n", oneJolt, threeJolt, oneJolt*threeJolt)
 
-	seen := make(map[int]int)
-	total := big.NewInt(0)
+	combos := make([]int, len(adapters))
+	combos[len(combos)-1] = 1
 
-	for i := 0; i <= 3; i++ {
-		if adapters[i] == 1 || adapters[i] == 2 || adapters[i] == 3 {
-			total.Add(total, big.NewInt(1))
-			continue
-		}
-	}
-outer:
-	for i, v := range adapters {
-	inner:
+	for i := len(adapters) - 2; i >= 0; i-- {
+		sum := 0
 		for j := 1; j <= 3; j++ {
-			if i == len(adapters)-1 {
-				seen[v]++
-				continue outer
-			} else if i+j >= len(adapters) {
-				continue outer
-			}
-
-			for k := 1; k <= 3; k++ {
-				if v+j == adapters[i+k] {
-					seen[v]++
-					continue inner
-				}
+			if pos, ok := seen[adapters[i]+j]; ok {
+				sum += combos[pos]
 			}
 		}
-
-		total.Add(total, big.NewInt(int64(seen[v]*(i+1))))
+		combos[i] = sum
 	}
 
-	//total.Add(total, big.NewInt(int64()))
-
-	fmt.Println(adapters)
-	fmt.Println(seen)
-	fmt.Println(total)
+	ret := 0
+	for v := 1; v <= 3; v++ {
+		if pos, ok := seen[v]; ok {
+			ret += combos[pos]
+		}
+	}
+	fmt.Println(ret)
 }
