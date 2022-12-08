@@ -55,7 +55,25 @@ func main() {
 		}
 	}
 
-	fmt.Println(count)
+	fmt.Printf("Visible trees: %d\n", count)
+
+	scenicScore := 0
+	for i, row := range grid {
+		if i == 0 || i == len(grid)-1 {
+			continue
+		}
+
+		for k := range row {
+			if k == 0 || k == len(row)-1 {
+				continue
+			}
+
+			if score := getScenicScore(i, k, grid); score > scenicScore {
+				scenicScore = score
+			}
+		}
+	}
+	fmt.Printf("Scenic Score: %d\n", scenicScore)
 }
 
 func isVisible(row int, col int, grid [][]int) bool {
@@ -98,4 +116,53 @@ func isVisible(row int, col int, grid [][]int) bool {
 	}
 	//fmt.Printf("%v:%v is not visible\n", row, col)
 	return false
+}
+
+func getScenicScore(row, col int, grid [][]int) int {
+
+	left := 0
+	right := 0
+	top := 0
+	bottom := 0
+	// check tree -> left
+	for i := col; i >= 0; i-- {
+		if (i - 1) < 0 {
+			break
+		}
+		left++
+		if grid[row][i-1] >= grid[row][col] {
+			break
+		}
+	}
+	// check tree -> right
+	for i := col; i < len(grid[row]); i++ {
+		if (i + 1) >= len(grid[row]) {
+			break
+		}
+		right++
+		if grid[row][i+1] >= grid[row][col] {
+			break
+		}
+	}
+	// check tree -> top
+	for i := row; i >= 0; i-- {
+		if (i - 1) < 0 {
+			break
+		}
+		top++
+		if grid[i-1][col] >= grid[row][col] {
+			break
+		}
+	}
+	// check tree -> bottom
+	for i := row; i < len(grid); i++ {
+		if (i + 1) >= len(grid) {
+			break
+		}
+		bottom++
+		if grid[i+1][col] >= grid[row][col] {
+			break
+		}
+	}
+	return left * right * top * bottom
 }
